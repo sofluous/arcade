@@ -3,10 +3,8 @@
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <script type="text/javascript">
 
-	// Default shell for PICO-8 0.2.2 (includes @weeble's gamepad mod 1.0)
-	// This file is available under a CC0 license https://creativecommons.org/share-your-work/public-domain/cc0/
-	// (note: "this file" does not include any cartridge or cartridge artwork injected into a derivative html file when using the PICO-8 html exporter)
-
+	// Default shell for PICO-8 0.2.6 (includes @weeble's gamepad mod 1.0)
+	
 	// options
 
 	// fullscreen, sound, close button at top when playing on touchscreen
@@ -419,18 +417,6 @@
 			}
 		}
 
-		// Arcade desktop embed: fit one square plus a 40px control row.
-		// Leave the export's touch and fullscreen layout in charge in those modes.
-		var arcade_windowed = !is_fullscreen && !p8_touch_detected;
-		document.documentElement.classList.toggle("arcade-windowed", arcade_windowed);
-		if (arcade_windowed)
-		{
-			csize = Math.max(1, Math.floor(Math.min(window.innerWidth, window.innerHeight - 40)));
-			margin_left = 0;
-			margin_top = 0;
-			p8_container.style.setProperty("--arcade-canvas-size", csize + "px");
-		}
-
 		// skip if relevant state has not changed
 
 		var update_hash = csize + margin_top * 1000.3 + margin_left * 0.001 + frame_width * 333.33 + frame_height * 772.15134;
@@ -465,15 +451,15 @@
 		else
 			p8_playarea.style.marginTop = "";
 
-		canvas.style.width = csize + "px";
-		canvas.style.height = csize + "px";
+		canvas.style.width = csize;
+		canvas.style.height = csize;
 
 		// to do: this should just happen from css layout
 		canvas.style.marginLeft = margin_left;
 		canvas.style.marginTop = margin_top;
 
-		p8_container.style.width = csize + "px";
-		p8_container.style.height = (arcade_windowed ? csize + 40 : csize) + "px";
+		p8_container.style.width = csize;
+		p8_container.style.height = csize;
 
 		// set menu buttons position to bottom right
 		el = document.getElementById("p8_menu_buttons");
@@ -1017,7 +1003,6 @@ canvas{
 -->
 </STYLE>
 
-<link rel="stylesheet" href="../player.css">
 </head>
 
 <body style="padding:0px; margin:0px; background-color:#222; color:#ccc">
