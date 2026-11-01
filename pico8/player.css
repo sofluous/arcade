@@ -1,5 +1,7 @@
-/* Arcade web-export shell. Keep this link when replacing an exported HTML file.
+/* Arcade web-export shell. prepare_players.py installs the HTML integration.
    Only desktop windowed layout is changed; PICO-8 owns touch/fullscreen sizing. */
+/* Match the embedding page scheme; a mismatch can force an opaque iframe canvas. */
+:root { color-scheme: light dark; }
 html, body { margin: 0; padding: 0; background: transparent !important; }
 html.arcade-windowed, .arcade-windowed body { width: 100%; height: 100%; }
 .arcade-windowed #p8_frame_0 {
