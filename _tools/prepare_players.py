@@ -78,6 +78,7 @@ def prepare(raw):
 
 
 def dependencies(path, text):
+    warnings = []
     scripts = re.findall(r'\be\.src\s*=\s*["\x27]([^"\x27]+\.js)["\x27]', text)
     if len(scripts) != 1:
         raise ValueError('expected one local exported runtime script')
@@ -91,10 +92,14 @@ def dependencies(path, text):
         for wasm in set(re.findall(rb'[A-Za-z0-9_.-]+\.wasm', runtime)):
             dep = path.parent / wasm.decode('ascii')
             if not dep.is_file() or dep.stat().st_size == 0:
-                raise ValueError('missing or empty dependency: ' + dep.name)
+                warnings.append('missing or empty WASM file: ' + dep.name +
+                                '; HTML/CSS treatment can proceed, but this runtime may not play until the file is restored.')
+    return warnings
 
 
-def plan(root):
+def plan(root, warnings=None):
+    if warnings is None:
+        warnings = []
     css = root / 'pico8/player.css'
     if not css.is_file() or 'color-scheme: light dark' not in css.read_text():
         raise ValueError('missing or incompatible shared pico8/player.css')
@@ -113,7 +118,8 @@ def plan(root):
         path = html[0]
         try:
             raw = path.read_bytes()
-            dependencies(path, raw.decode('utf-8'))
+            for warning in dependencies(path, raw.decode('utf-8')):
+                warnings.append(str(path.relative_to(root)) + ': ' + warning)
             output = prepare(raw)
             work.append((path, raw, output))
         except (ValueError, UnicodeError, OSError) as error:
@@ -158,17 +164,21 @@ def apply(work, backups):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--check', action='store_true', help='validate without writing; exit 1 when preparation is needed')
+    parser.add_argument('--check', action='store_true', help='check HTML/CSS treatment without writing; exit 1 when preparation is needed; WASM warnings do not fail the check')
     args = parser.parse_args()
     try:
-        work = plan(ROOT)
+        warnings = []
+        work = plan(ROOT, warnings)
+        for warning in warnings:
+            print('WARNING: ' + warning, file=sys.stderr)
         pending = [p for p, old, new in work if old != new]
         for path, old, new in work:
-            print(('NEEDS PREPARATION ' if old != new else 'READY ') + str(path.relative_to(ROOT)))
+            print(('NEEDS PREPARATION ' if old != new else 'TREATMENT READY ') + str(path.relative_to(ROOT)))
         if args.check:
+            print(f'{len(work)} HTML shells checked; {len(pending)} need treatment; {len(warnings)} WASM warnings. Playback is not verified.')
             return int(bool(pending))
         changed = apply(work, ROOT.parent / '_exports/player-html-inputs')
-        print(f'{len(work)} packages validated; {len(changed)} HTML files updated. No runtime files changed; no upload.')
+        print(f'{len(work)} HTML shells checked; {len(changed)} HTML files updated; {len(warnings)} WASM warnings. No runtime files changed; no upload. Playback is not verified.')
         return 0
     except (ValueError, OSError) as error:
         print('STOP: ' + str(error), file=sys.stderr)
