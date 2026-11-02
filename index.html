@@ -1,7 +1,25 @@
 <!doctype html>
-<html lang="en">
-<meta charset="utf-8">
-<title>sofluous arcade</title>
-<h1>sofluous arcade</h1>
-<p>Games coming soon.</p>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="Small handmade worlds, a personal console, and a rotating cartridge library."><title>sofluous — arcade</title><link rel="stylesheet" href="assets/arcade.css"><link rel="stylesheet" href="assets/stack.css"><link rel="stylesheet" href="assets/cartridge-mockups.css"><script src="assets/arcade.js" defer></script></head>
+<body data-design="service" data-cartridge="module">
+
+<main class="workbench">
+<h1 class="visually-hidden">sofluous arcade</h1>
+<div class="arcade-station">
+<section class="console" aria-label="sofluous entertainment console">
+<div class="monitor-housing"><div class="housing-vents" aria-hidden="true"></div><i class="screw screw-tl" aria-hidden="true"></i><i class="screw screw-tr" aria-hidden="true"></i>
+
+<div class="console-body"><section class="display-assembly" aria-label="Game display"><div class="screen-surround"><div class="display-port" id="display-port"><iframe id="game-frame" src="pico8/Jellyfish/" title="Jellyfish game player" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></div></div><span class="visually-hidden" id="screen-status" role="status" aria-live="polite">Jellyfish loaded - press play on screen</span></section></div>
+</div>
+<div class="console-neck" aria-hidden="true"></div>
+<footer class="console-base"><div class="base-top"><div class="slot-surround"><div class="cartridge-slot" aria-hidden="true"><i></i></div></div><div class="audio-meters" aria-hidden="true"><span class="vu-window"><i></i></span><span class="vu-window"><i></i></span></div><div class="base-vents" aria-hidden="true"></div></div><div class="base-front"><div class="power-indicator"><i class="indicator" aria-hidden="true"></i><span>POWER<br><b>ON</b></span></div><div class="loaded-readout"><strong id="loaded-title">JELLYFISH / LOADED</strong></div><div class="transport"><button id="restart-game" class="restart" type="button">↻<small>RESET</small></button><a class="open-game" id="open-game" href="pico8/Jellyfish/" target="_blank" rel="noopener"><span aria-hidden="true">↗</span><small>OPEN GAME</small></a></div></div></footer>
+<div class="console-feet" aria-hidden="true"><i></i><i></i></div>
+</section>
+<aside class="cartridge-deck" aria-label="Vertical cartridge magazine">
+<nav class="cart-mockups" aria-label="Cartridge mechanism mockups"><button type="button" data-cart-choice="module" aria-pressed="true">01 / DATA BLOCK</button><button type="button" data-cart-choice="edge" aria-pressed="false">02 / EDGE</button><button type="button" data-cart-choice="core" aria-pressed="false">03 / OPTIC CORE</button></nav>
+<div class="deck-heading"><span>CARTRIDGE MAGAZINE</span><span><b id="game-count">09</b> SLOTS</span></div>
+<div class="tape-magazine"><div class="stack-stage" id="rolodex" tabindex="0" aria-label="Browse cartridges with up and down arrow keys" aria-roledescription="carousel"><div class="stack-rails" aria-hidden="true"></div><div class="tape-stack" id="cartridge-card"></div><div class="magazine-index" aria-hidden="true"></div></div></div>
+<div class="cart-console" id="cart-controls"><div class="selection-state"><span id="cartridge-state" role="status" aria-live="polite">IN THE CONSOLE</span><span id="browse-position" aria-live="polite">01 / 09</span></div><div class="deck-controls"><button id="previous-game" type="button" aria-label="Previous cartridge, shift up">&#9650;</button><button class="load-cartridge" id="load-game" type="button">RESTART CARTRIDGE</button><button id="next-game" type="button" aria-label="Next cartridge, shift down">&#9660;</button></div></div>
+<div class="visually-hidden"><span id="game-number">01</span><h2 id="game-title">Jellyfish</h2><p id="game-description">A small world, gently drifting.</p></div>
+</aside></div>
+<noscript><p class="no-script">Enable JavaScript to browse cartridges. <a href="pico8/Jellyfish/">Open Jellyfish directly.</a></p></noscript>
+</main></body></html>

@@ -423,7 +423,7 @@
 		document.documentElement.classList.toggle("arcade-windowed", arcade_windowed);
 		if (arcade_windowed)
 		{
-			csize = Math.max(1, Math.floor(Math.min(window.innerWidth, window.innerHeight - 40)));
+			csize = Math.max(1, Math.floor(Math.min(Math.floor(p8_frame.getBoundingClientRect().width), Math.floor(p8_frame.getBoundingClientRect().height) - 40)));
 			margin_left = 0;
 			margin_top = 0;
 			p8_container.style.setProperty("--arcade-canvas-size", csize + "px");
@@ -1016,6 +1016,29 @@ canvas{
 </STYLE>
 
 <link rel="stylesheet" href="../player.css">
+<script>
+// Install beside arcade's player.css and include in every prepared export shell.
+// Handshake binds replies to the embedding window without trusting arbitrary messages.
+(() => {
+  if (window.parent === window) return;
+  let parentOrigin = null;
+  let touched = false;
+  const report = () => {
+    if (parentOrigin) window.parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched }, parentOrigin);
+  };
+  window.addEventListener('message', event => {
+    if (event.source !== window.parent || !/^https?:\/\//.test(event.origin)) return;
+    if (event.data?.type !== 'portfolio:pico-connect' || event.data.version !== 1) return;
+    if (parentOrigin && parentOrigin !== event.origin) return;
+    parentOrigin = event.origin;
+    report();
+  });
+  window.addEventListener('touchstart', () => {
+    touched = true;
+    report();
+  }, { once: true, passive: true, capture: true });
+})();
+</script>
 </head>
 
 <body style="padding:0px; margin:0px; background-color:#222; color:#ccc">

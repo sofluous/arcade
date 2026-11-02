@@ -10,7 +10,9 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 START = '\t\t// Arcade desktop embed: fit one square plus a 40px control row.'
 ANCHOR = '\t\t// skip if relevant state has not changed'
-LINK = '<link rel="stylesheet" href="../player.css">'
+LEGACY_LINK = '<link rel="stylesheet" href="../player.css">'
+BRIDGE = "// Install beside arcade's player.css and include in every prepared export shell.\n// Handshake binds replies to the embedding window without trusting arbitrary messages.\n(() => {\n  if (window.parent === window) return;\n  let parentOrigin = null;\n  let touched = false;\n  const report = () => {\n    if (parentOrigin) window.parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched }, parentOrigin);\n  };\n  window.addEventListener('message', event => {\n    if (event.source !== window.parent || !/^https?:\\/\\//.test(event.origin)) return;\n    if (event.data?.type !== 'portfolio:pico-connect' || event.data.version !== 1) return;\n    if (parentOrigin && parentOrigin !== event.origin) return;\n    parentOrigin = event.origin;\n    report();\n  });\n  window.addEventListener('touchstart', () => {\n    touched = true;\n    report();\n  }, { once: true, passive: true, capture: true });\n})();\n"
+LINK = LEGACY_LINK + '\n<script>\n' + BRIDGE + '</script>'
 BLOCK = '''\t\t// Arcade desktop embed: fit one square plus a 40px control row.
 \t\t// Leave the export's touch and fullscreen layout in charge in those modes.
 \t\tvar arcade_windowed = !is_fullscreen && !p8_touch_detected;
@@ -24,6 +26,11 @@ BLOCK = '''\t\t// Arcade desktop embed: fit one square plus a 40px control row.
 \t\t}
 
 '''
+LEGACY_BLOCK = BLOCK
+BLOCK = BLOCK.replace(
+    'Math.min(window.innerWidth, window.innerHeight - 40)',
+    'Math.min(Math.floor(p8_frame.getBoundingClientRect().width), Math.floor(p8_frame.getBoundingClientRect().height) - 40)')
+
 REPLACEMENTS = {
     'canvas.style.width = csize;': 'canvas.style.width = csize + "px";',
     'canvas.style.height = csize;': 'canvas.style.height = csize + "px";',
@@ -42,6 +49,12 @@ def sha(data):
 
 def original_shell(text):
     """Recognize stock or our exact managed integration; reject partial edits."""
+    # Upgrade only the exact previous sizing integration.
+    if LEGACY_BLOCK in text:
+        text = text.replace(LEGACY_BLOCK, BLOCK)
+    # Upgrade existing prepared shells before exact managed-edit validation.
+    if LEGACY_LINK in text and 'portfolio:pico-connect' not in text:
+        text = text.replace(LEGACY_LINK, LINK)
     managed = any(token in text for token in (START, LINK, 'arcade_windowed'))
     if managed:
         if text.count(BLOCK) != 1 or text.count(LINK + '\n') != 1:
