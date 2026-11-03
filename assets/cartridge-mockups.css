@@ -1,32 +1,131 @@
-﻿/* Three cartridge mechanisms; console styling is unchanged Service. */
-.cart-mockups{display:flex;gap:4px;margin:0 0 13px}.cart-mockups button{flex:1;padding:8px 3px;font-size:6px;letter-spacing:.3px;background:#1f3827;color:#cbd3ad;border:1px solid #7b8d67;border-radius:2px;min-height:29px}.cart-mockups button[aria-pressed=true]{background:#dea36c;color:#263f2b;border-color:#f2bc85}.deck-heading{font-size:7px}.stack-stage{height:493px;border-radius:7px;box-shadow:inset 0 7px 9px #081b10,inset 6px 0 #6b7f57,inset -7px 0 #102a19,8px 9px 0 #1c3524,0 6px 0 #71815b}.tape-cartridge{margin:0}.tape-cartridge.is-front{height:250px}.tape-spine{width:100%;cursor:pointer;line-height:1;border-left:0;border-right:0;border-bottom:0;font-family:inherit;text-align:left}.tape-spine:hover{filter:brightness(1.16)}.is-front .tape-spine{width:calc(100% - 22px)}.is-front .tape-face{height:133px;padding:8px 11px 0}.tape-label{min-height:50px;border-top-width:5px}.tape-label strong{font-size:19px}.tape-foot{display:none}.tape-window{height:53px;min-height:53px;border-radius:3px;border:3px solid #193c2a;background:linear-gradient(125deg,#192f28,#466e58);padding:5px 8px;gap:8px;box-shadow:inset 0 3px 6px #081d15}.memory-grid{display:block;width:35px;height:32px;background:repeating-linear-gradient(0deg,transparent 0 6px,#b6cb8c66 6px 7px),repeating-linear-gradient(90deg,#92b58244 0 6px,#d0d5a0 6px 7px);border:1px solid #b7c891}.data-port{display:flex;flex-direction:column;flex:1;color:#c1d69e;font:20px "Courier New",monospace;letter-spacing:2px}.data-port>span{font-size:4px;letter-spacing:1px;margin-top:3px}.signal-strip{height:27px;width:9px;background:repeating-linear-gradient(0deg,#a4c180 0 4px,transparent 4px 6px);box-shadow:0 0 5px #8ab46e44}.cart-console{position:absolute;left:11px;right:11px;bottom:10px;padding:8px 7px 6px;border-top:2px solid #8b9d6e;background:linear-gradient(#334f32,#203e2a);border-radius:0 0 3px 3px;box-shadow:inset 0 2px #112e1d}.cart-console .selection-state{margin:0 0 7px;padding:0;border:0;color:#c4cf9e;font-size:5px;line-height:1.3}.cart-console .deck-controls{gap:4px}.cart-console .deck-controls button{height:35px;border-radius:2px;padding:5px 9px;box-shadow:0 3px #172e1c;border-bottom:4px solid #8b9f73}.cart-console .deck-controls .load-cartridge{font-size:6px;padding-inline:4px;box-shadow:0 3px #753e25;border-bottom-color:#a4542f}.magazine-index{height:210px}.tape-screws:before,.tape-screws:after{box-shadow:0 -206px 0 #a6b184}.tape-screws:before{left:4px}.tape-screws:after{right:4px}
+/* Three cartridge mechanisms; console styling is unchanged Service. */
+.cart-mockups{display:flex;gap:4px;margin:0 0 13px}.cart-mockups button{flex:1;padding:8px 3px;font-size:6px;letter-spacing:.3px;background:#2a2a2a;color:#bebebe;border:1px solid #787878;border-radius:2px;min-height:29px}.cart-mockups button[aria-pressed=true]{background:#a1a1a1;color:#313131;border-color:#b9b9b9}.deck-heading{font-size:7px}.stack-stage{height:493px;border-radius:7px;box-shadow:inset 0 7px 9px #101010,inset 6px 0 #696969,inset -7px 0 #1c1c1c,8px 9px 0 #272727,0 6px 0 #6c6c6c}.tape-cartridge{margin:0}.tape-cartridge.is-front{height:250px}.tape-spine{width:100%;cursor:pointer;line-height:1;border-left:0;border-right:0;border-bottom:0;font-family:inherit;text-align:left}.tape-spine:hover{filter:brightness(1.16)}.is-front .tape-spine{width:calc(100% - 22px)}.is-front .tape-face{height:133px;padding:8px 11px 0}.tape-label{min-height:50px;border-top-width:5px}.tape-label strong{font-size:19px}.tape-foot{display:none}.tape-window{height:53px;min-height:53px;border-radius:3px;border:3px solid #292929;background:linear-gradient(125deg,#232323,#585858);padding:5px 8px;gap:8px;box-shadow:inset 0 3px 6px #111111}.memory-grid{display:block;width:35px;height:32px;background:repeating-linear-gradient(0deg,transparent 0 6px,#a9a9a966 6px 7px),repeating-linear-gradient(90deg,#99999944 0 6px,#b8b8b8 6px 7px);border:1px solid #aaaaaa}.data-port{display:flex;flex-direction:column;flex:1;color:#b8b8b8;font:20px "Courier New",monospace;letter-spacing:2px}.data-port>span{font-size:4px;letter-spacing:1px;margin-top:3px}.signal-strip{height:27px;width:9px;background:repeating-linear-gradient(0deg,#9e9e9e 0 4px,transparent 4px 6px);box-shadow:0 0 5px #8e8e8e44}.cart-console{position:absolute;left:11px;right:11px;bottom:10px;padding:8px 7px 6px;border-top:2px solid #838383;background:linear-gradient(#3f3f3f,#2d2d2d);border-radius:0 0 3px 3px;box-shadow:inset 0 2px #1e1e1e}.cart-console .selection-state{margin:0 0 7px;padding:0;border:0;color:#b5b5b5;font-size:5px;line-height:1.3}.cart-console .deck-controls{gap:4px}.cart-console .deck-controls button{height:35px;border-radius:2px;padding:5px 9px;box-shadow:0 3px #212121;border-bottom:4px solid #878787}.cart-console .deck-controls .load-cartridge{font-size:6px;padding-inline:4px;box-shadow:0 3px #494949;border-bottom-color:#636363}.magazine-index{height:210px}.tape-screws:before,.tape-screws:after{box-shadow:0 -206px 0 #999999}.tape-screws:before{left:4px}.tape-screws:after{right:4px}
 /* 01 Data Block: stepped solid-state memory module with recessed readout. */
-[data-cartridge=module] .tape-cartridge.is-front{border-radius:5px;border-left:8px solid #b6bea1;border-right:8px solid #839779;background:linear-gradient(110deg,#7c9070,#324e36);box-shadow:inset 0 4px #bfd0a3,7px 9px #122d1c,0 15px 16px #0008}
-[data-cartridge=module] .tape-label{border-radius:0;border-left:5px solid #e99a57}.tape-stack .tape-cartridge:not(.is-front) .cart-console{display:none}
+[data-cartridge=module] .tape-cartridge.is-front{border-radius:5px;border-left:8px solid #aeaeae;border-right:8px solid #868686;background:linear-gradient(110deg,#7e7e7e,#3e3e3e);box-shadow:inset 0 4px #b8b8b8,7px 9px #1e1e1e,0 15px 16px #00000088}
+[data-cartridge=module] .tape-label{border-radius:0;border-left:5px solid #9c9c9c}.tape-stack .tape-cartridge:not(.is-front) .cart-console{display:none}
 /* 02 Edge Connector: asymmetrical casing, side-mounted transport keys and pin rail. */
-[data-cartridge=edge] .tape-cartridge.is-front{background:linear-gradient(100deg,#afba9c,#657f61);border-radius:12px 3px 3px 12px;border-left:12px solid #e5a25c;border-right:7px solid #405b44;box-shadow:inset 0 4px #d5d8b3,7px 9px #203e2b}
+[data-cartridge=edge] .tape-cartridge.is-front{background:linear-gradient(100deg,#aaaaaa,#6e6e6e);border-radius:12px 3px 3px 12px;border-left:12px solid #9c9c9c;border-right:7px solid #4c4c4c;box-shadow:inset 0 4px #c4c4c4,7px 9px #2d2d2d}
 [data-cartridge=edge] .is-front .tape-face{height:174px;padding-right:79px;padding-left:7px}
-[data-cartridge=edge] .is-front .tape-label{min-height:74px;border-left:0;padding:7px 5px;border-top:0;border-bottom:7px solid var(--cartridge-accent);background:#ddd8ad}
+[data-cartridge=edge] .is-front .tape-label{min-height:74px;border-left:0;padding:7px 5px;border-top:0;border-bottom:7px solid var(--cartridge-accent);background:#c3c3c3}
 [data-cartridge=edge] .tape-label strong{font-size:16px}
 [data-cartridge=edge] .tape-label small{font-size:4px;letter-spacing:.5px}
-[data-cartridge=edge] .tape-window{height:68px;min-height:68px;display:grid;grid-template-columns:1fr 8px;padding:5px;background:#213f32}
+[data-cartridge=edge] .tape-window{height:68px;min-height:68px;display:grid;grid-template-columns:1fr 8px;padding:5px;background:#2e2e2e}
 [data-cartridge=edge] .memory-grid{display:none}
 [data-cartridge=edge] .data-port{font-size:18px;letter-spacing:1px}
 [data-cartridge=edge] .data-port>span{font-size:3px;letter-spacing:.1px}
-[data-cartridge=edge] .cart-console{left:auto;right:8px;top:49px;bottom:12px;width:64px;display:flex;flex-direction:column;border:1px solid #152f21;padding:6px 5px;background:linear-gradient(#4b6444,#213f2b)}
+[data-cartridge=edge] .cart-console{left:auto;right:8px;top:49px;bottom:12px;width:64px;display:flex;flex-direction:column;border:1px solid #212121;padding:6px 5px;background:linear-gradient(#525252,#2e2e2e)}
 [data-cartridge=edge] .cart-console .selection-state{font-size:4px;letter-spacing:0;flex-direction:column;gap:3px;margin-bottom:6px}
 [data-cartridge=edge] .deck-controls{flex:1;flex-direction:column;gap:5px}
 [data-cartridge=edge] .deck-controls button{height:27px;padding:3px}
 [data-cartridge=edge] .deck-controls .load-cartridge{font-size:5px;line-height:1.6;white-space:normal}
-[data-cartridge=edge] .tape-cartridge.is-front:after{content:"";position:absolute;bottom:11px;left:16px;width:calc(100% - 100px);height:15px;background:repeating-linear-gradient(90deg,#cdb67b 0 4px,#263f2d 4px 7px);border:3px solid #38583b;pointer-events:none}
+[data-cartridge=edge] .tape-cartridge.is-front:after{content:"";position:absolute;bottom:11px;left:16px;width:calc(100% - 100px);height:15px;background:repeating-linear-gradient(90deg,#a1a1a1 0 4px,#313131 4px 7px);border:3px solid #464646;pointer-events:none}
 /* 03 Optic Core: faceted sealed module and a central light-pipe window, no reels. */
-[data-cartridge=core] .tape-cartridge.is-front{border-radius:22px 6px 22px 6px;background:linear-gradient(130deg,#294d48,#819a85 35%,#274f44 80%);border-color:#1d3b33;border-left:7px solid #a4c0a5;border-right:8px solid #3d6a59;box-shadow:inset 0 4px #c0d4ae,8px 9px #0b3028}
-[data-cartridge=core] .tape-label{min-height:41px;background:transparent;border:0;color:#e0dfb8;padding-block:3px}
+[data-cartridge=core] .tape-cartridge.is-front{border-radius:22px 6px 22px 6px;background:linear-gradient(130deg,#393939,#8c8c8c 35%,#393939 80%);border-color:#2a2a2a;border-left:7px solid #b1b1b1;border-right:8px solid #515151;box-shadow:inset 0 4px #bfbfbf,8px 9px #1b1b1b}
+[data-cartridge=core] .tape-label{min-height:41px;background:transparent;border:0;color:#cacaca;padding-block:3px}
 [data-cartridge=core] .tape-label strong{font-size:19px;letter-spacing:-.5px}
-[data-cartridge=core] .tape-window{height:59px;min-height:59px;justify-content:center;border-radius:6px 18px 6px 18px;border-color:#122f2a;background:repeating-linear-gradient(45deg,#90b69811 0 1px,transparent 1px 9px),linear-gradient(#183e36,#467c62);box-shadow:inset 0 3px 6px #09281e,0 0 0 1px #8eaf91}
-[data-cartridge=core] .memory-grid{width:37px;height:37px;border-radius:50%;border:7px double #b6d6a9;background:radial-gradient(circle,#d0dfb0 0 20%,#336755 22% 45%,#9fc48e 47% 52%,#224e40 54%);box-shadow:0 0 10px #abd0a955}
+[data-cartridge=core] .tape-window{height:59px;min-height:59px;justify-content:center;border-radius:6px 18px 6px 18px;border-color:#1f1f1f;background:repeating-linear-gradient(45deg,#a1a1a111 0 1px,transparent 1px 9px),linear-gradient(#292929,#5e5e5e);box-shadow:inset 0 3px 6px #171717,0 0 0 1px #9d9d9d}
+[data-cartridge=core] .memory-grid{width:37px;height:37px;border-radius:50%;border:7px double #bebebe;background:radial-gradient(circle,#c6c6c6 0 20%,#4a4a4a 22% 45%,#a7a7a7 47% 52%,#363636 54%);box-shadow:0 0 10px #bbbbbb55}
 [data-cartridge=core] .data-port{flex:0;font-size:23px;margin-left:5px}
 [data-cartridge=core] .data-port>span{font-size:3px;letter-spacing:.2px}
 [data-cartridge=core] .signal-strip{height:29px;width:6px}
-[data-cartridge=core] .cart-console{border-radius:2px 2px 14px 2px;background:linear-gradient(#3b6351,#1b4237);border-top-color:#b9cf9e}
+[data-cartridge=core] .cart-console{border-radius:2px 2px 14px 2px;background:linear-gradient(#4d4d4d,#2c2c2c);border-top-color:#b5b5b5}
 @media(max-width:1250px) and (min-width:761px){.cart-mockups button{font-size:5px;padding-inline:1px}.cart-console{left:8px;right:8px;padding-inline:5px}.cart-console .deck-controls button{padding-inline:7px}.cart-console .deck-controls .load-cartridge{font-size:5px}.tape-label strong{font-size:17px}[data-cartridge=edge] .tape-label strong{font-size:14px}[data-cartridge=edge] .cart-console{right:6px;width:58px}[data-cartridge=edge] .is-front .tape-face{padding-right:68px}}
+
+/* Y2K silver deck: selected cartridge above the full-height storage stack. */
+.cartridge-deck{align-self:stretch;display:flex;flex-direction:column;padding-inline:20px}
+.tape-magazine{flex:1;display:flex;min-height:0}
+.stack-stage{width:100%;height:clamp(510px,calc(100dvh - 160px),790px)}
+.tape-stack{top:14px}
+.stack-scroll-controls{position:absolute;inset:0;z-index:30;pointer-events:none}
+.stack-scroll-controls button{position:absolute;top:66%;width:34px;height:66px;padding:0;pointer-events:auto;border:1px solid #cccccc;border-bottom:5px solid #666666;border-radius:5px;background:linear-gradient(100deg,#e5e5e5,#a5a5a5);color:#373737;box-shadow:3px 5px 0 #1f1f1f,0 0 0 2px #2d2d2d;cursor:pointer}
+#previous-game{left:-23px}#next-game{right:-23px}
+.stack-scroll-controls button:hover{background:#e1e1e1}.stack-scroll-controls button:active{transform:translateY(3px)}
+.magazine-index{top:275px;height:calc(100% - 300px);background:#c3c3c3}
+.cart-console .deck-controls .load-cartridge{width:100%;background:linear-gradient(#dcdcdc,#b6b6b6);color:#2e2e2e;border-bottom-color:#7a7a7a;box-shadow:0 3px #2c2c2c}
+[data-cartridge=edge] .deck-controls{justify-content:flex-end}
+[data-cartridge=edge] .deck-controls .load-cartridge{height:74px;flex:none}
+body[data-design=service]{background:radial-gradient(ellipse at 50% 35%,#7e7e7e33,transparent 70%),repeating-linear-gradient(90deg,#c7c7c707 0 1px,transparent 1px 64px),#1e1e1e}
+.power-indicator{background:#d5d5d5;box-shadow:0 0 8px #b1b1b1}
+@media(max-width:760px){.cartridge-deck{width:275px}.stack-stage{height:510px}}
+
+/* Reference finish: matte equipment gray, charcoal keys and signal orange. */
+body[data-design=service]{background:radial-gradient(ellipse at 50% 30%,#46464655,transparent 75%),#252525}
+.monitor-housing{background:linear-gradient(105deg,#d5d4d0,#bcbcb9 80%,#a3a39f);border-color:#deddd8;box-shadow:inset 0 3px #eeede8,inset 3px 0 #deddd8,inset -7px 0 #999995,10px 11px #777773,16px 17px #494947,0 22px 24px #0005}
+.monitor-housing:after{background:linear-gradient(#fa4b11 0 30%,#b6b6b0 30% 100%)}
+.console-base{border-left-color:#b8b8b3;border-right-color:#858580}
+.base-top{background:linear-gradient(173deg,#d0cfca,#b7b7b2);border-color:#e0dfda}
+.base-front{background:linear-gradient(#c5c4bf,#adada8);border-color:#dfded8}
+.loaded-readout{background:#30302f;border-color:#85857f;color:#eeede7}
+.transport{display:grid;grid-template-columns:repeat(2,48px);gap:9px;flex:none}
+.transport .restart,.transport .open-game{box-sizing:border-box;width:48px;min-width:48px;max-width:48px;height:48px;min-height:48px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid #171716;border-bottom:4px solid #161615;border-radius:3px;background:linear-gradient(#3c3c39,#292928);color:#f0efea;box-shadow:inset 0 1px #666660,2px 3px 3px #0005;font-size:18px;text-decoration:none}
+.transport .open-game{background:linear-gradient(#ff5b20,#e9410a);border-color:#c33208;border-bottom-color:#9b2d0b;box-shadow:inset 0 1px #ff9a68,2px 3px 3px #0005}
+.transport small{font:5px Arial,sans-serif;letter-spacing:.3px;line-height:1}
+.transport .restart:hover,.transport .open-game:hover{filter:brightness(1.12)}
+.power-indicator{background:transparent;box-shadow:none;color:#383834}.power-indicator .indicator{background:#fa4b11;box-shadow:0 0 3px #f4512177}
+.cart-mockups button{background:#30302e;border-color:#62625c;color:#ecebe5;border-radius:2px;font-family:Arial,sans-serif}
+.cart-mockups button[aria-pressed=true]{background:#e4e3dc;color:#282826;border-color:#f1f0ea;border-bottom:3px solid #f04a13}
+.tape-label{background:#d9d8d0;color:#2a2a27;border-top-color:#f45117}
+[data-cartridge=module] .tape-label{border-left-color:#f45117}
+[data-cartridge=edge] .tape-cartridge.is-front{border-left-color:#f45117}
+[data-cartridge=edge] .tape-label{background:#d9d8d0}
+.tape-label small,.deck-heading,.selection-state{font-family:Arial,sans-serif}
+.memory-grid{border-color:#c6c6bb}.data-port{color:#e2e2d5}.signal-strip{background:repeating-linear-gradient(0deg,#bdbeb1 0 4px,transparent 4px 6px);box-shadow:none}
+.magazine-index{background:#fa4b11}
+.stack-scroll-controls button{width:34px;height:48px;background:linear-gradient(#41413e,#2a2a28);color:#f1f0e9;border-color:#151514;border-bottom-color:#111110;box-shadow:inset 0 1px #72726a,2px 3px 3px #0007;border-radius:3px}
+.stack-scroll-controls button:hover{background:#50504b}
+.cart-console .deck-controls .load-cartridge{background:linear-gradient(#ff5c24,#e94410);color:#fff5ee;border-bottom-color:#a52e0a;box-shadow:0 3px #401c11;border-radius:2px;font-family:Arial,sans-serif;font-size:7px}
+@media(max-width:760px){.base-front{gap:6px}.loaded-readout{min-width:0;padding-inline:5px}.loaded-readout strong{font-size:6px}.transport{grid-template-columns:repeat(2,48px);gap:7px}}
+
+/* Fitted industrial enclosure and readable equipment labeling. */
+.console{background:#bcbcb7;border:2px solid #d9d8d1;border-radius:5px;box-shadow:inset -4px 0 #999992,0 5px #70706b,0 12px 18px #0005;filter:none}
+.monitor-housing{padding:18px 18px 16px;border:0;border-radius:3px 3px 0 0;background:transparent;box-shadow:none}
+.monitor-housing:before,.monitor-housing:after{display:none}
+.housing-vents{top:6px;height:4px;border-radius:0}
+.screw{top:6px;width:5px;height:5px}.screw-tl{left:7px}.screw-tr{right:7px}
+.screen-surround{padding:10px;border:2px solid #777772;border-radius:3px;background:#343433;box-shadow:inset 0 3px 5px #0008,0 1px #e1e0d9}
+.display-port{border-radius:1px;box-shadow:0 0 0 2px #1b1b1a}
+.console-neck{display:none}
+.console-base{width:100%;margin:0;border:0;border-top:1px solid #8b8b85;border-radius:0 0 3px 3px;box-shadow:none;background:transparent}
+.base-top{height:46px;padding:7px 18px;background:#c5c5bf;border-top:1px solid #dfdfd7;border-bottom:1px solid #999992;gap:12px}
+.base-front{padding:12px 18px 14px;background:#bcbcb7;border-top:1px solid #d7d7cf;gap:12px}
+.base-vents{transform:none;background:repeating-linear-gradient(90deg,#64645e 0 2px,transparent 2px 6px)}
+.cartridge-slot{border-radius:1px;border:2px solid #8c8c84;height:10px}
+.vu-window{border:2px solid #81817a;border-radius:1px;background:#dbdbd1;box-shadow:inset 0 2px 2px #0003}
+.console-feet{position:absolute;top:100%;left:8%;width:84%;margin:3px 0 0}.console-feet i{height:5px;border-radius:0 0 2px 2px}
+.loaded-readout{padding:10px;min-height:42px;display:flex;align-items:center;border-radius:1px}
+.loaded-readout strong{font:12px Arial,sans-serif;letter-spacing:.4px}
+.power-indicator{font:9px Arial,sans-serif;line-height:1.3;letter-spacing:.2px}
+.transport small{font-size:8px;letter-spacing:0}.transport .restart,.transport .open-game{font-size:18px}
+.cart-mockups{gap:5px;margin-bottom:12px}.cart-mockups button{font-size:9px;line-height:1.3;letter-spacing:0;padding:7px 3px;min-height:40px}
+.deck-heading{font-size:10px;letter-spacing:.3px;margin:0 0 10px;color:#e0e0d8}.deck-heading b{color:#eee}
+.stack-stage{border:2px solid #8b8b83;border-radius:3px;background:#353533;box-shadow:inset 0 2px 4px #0008,0 4px #222220}
+.stack-rails{inset:7px 5px;border-width:2px;box-shadow:none}
+.stack-rails:before,.stack-rails:after{display:none}
+.tape-cartridge{border-radius:2px;box-shadow:inset 0 1px #8f8f87,0 2px #171716;background:linear-gradient(#676760,#484844)}
+[data-cartridge] .tape-cartridge.is-front{left:8px;width:calc(100% - 16px);border:3px solid #96968e;border-bottom:6px solid #55554f;border-radius:3px;box-shadow:inset 0 1px #c1c1b7,0 4px 0 #161615;background:#72726b}
+.tape-spine{padding:3px 7px;gap:7px;background:linear-gradient(#65655e,#42423e);border-top:1px solid #99998f}
+.tape-spine span{font:10px Arial,sans-serif;color:#e0e0d3}.tape-spine strong{font:12px Arial,sans-serif;letter-spacing:.1px;color:#fafaf1}
+.is-front .tape-spine{margin:5px 8px 0;width:calc(100% - 16px);background:#3b3b37;border:1px solid #99998e}
+.is-front .tape-spine strong{font:11px Arial,sans-serif;background:none;padding:0;color:#f2f2e8}
+[data-cartridge] .tape-label{border-radius:1px;min-height:55px;padding:6px 8px}
+[data-cartridge] .tape-label strong{font-size:24px;line-height:1.05;letter-spacing:-.4px}
+[data-cartridge] .tape-label small{font:9px Arial,sans-serif;letter-spacing:0;margin-top:4px}
+[data-cartridge] .data-port>span{font:8px Arial,sans-serif;letter-spacing:0}
+.cart-console .selection-state{font:9px Arial,sans-serif;letter-spacing:0;gap:5px;margin-bottom:6px;color:#eeeede}
+.cart-console .deck-controls .load-cartridge{font-size:11px;height:35px;letter-spacing:0;padding:3px}
+.cart-console{border-radius:1px;box-shadow:none;border-top:1px solid #99998e;background:#3e3e39}
+.magazine-index{left:-2px;width:3px;box-shadow:none}
+.tape-screws{display:none!important}
+/* Edge study keeps a compact side Load key without shrinking the type. */
+[data-cartridge=edge] .is-front .tape-face{padding-right:7px;height:133px}
+[data-cartridge=edge] .tape-label{min-height:55px;border-bottom:0;border-top:4px solid #f45117}
+[data-cartridge=edge] .tape-window{height:53px;min-height:53px;display:flex}
+[data-cartridge=edge] .cart-console{left:11px;right:11px;top:auto;bottom:10px;width:auto;display:block;padding:8px 7px 6px}
+[data-cartridge=edge] .cart-console .selection-state{font-size:9px;flex-direction:row}
+[data-cartridge=edge] .deck-controls{display:flex;flex-direction:row}
+[data-cartridge=edge] .deck-controls .load-cartridge{height:35px;font-size:11px;flex:1}
+[data-cartridge=edge] .tape-cartridge.is-front:after{display:none}
+[data-cartridge=core] .tape-label{min-height:55px;color:#f4f4ea}
+[data-cartridge=core] .tape-window{height:53px;min-height:53px;border-radius:3px}
+@media(max-width:1250px) and (min-width:761px){.cart-mockups button{font-size:8px}.deck-heading{font-size:9px}.base-front{gap:8px}.loaded-readout strong{font-size:11px}}
+@media(max-width:760px){.monitor-housing{padding:16px 14px 14px}.base-top{height:42px;padding-inline:14px}.base-front{padding:10px 14px 12px;gap:7px}.loaded-readout strong{font-size:11px;letter-spacing:0}.loaded-readout{padding:7px;min-height:42px}.cart-mockups button{font-size:9px}.power-indicator>span{display:none}}

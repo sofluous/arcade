@@ -15,7 +15,7 @@ const port = document.getElementById("display-port");
 const status = document.getElementById("screen-status");
 const deck = document.getElementById("rolodex");
 const symbols = ["\u25ce", "\u224b", "\u2733", "\u25a7", "\u25d2", "\u25a4", "\u25cc", "\u2571", "\u271b"];
-const accents = ["#496d68", "#4e7387", "#ab542e", "#64724b", "#73824e", "#b56b40", "#62627f", "#9a4d3d", "#85734d"];
+const accents = Array(games.length).fill("#f45117");
 let selected = 0; // Browsing does not interrupt the loaded game.
 let loaded = 0;
 let loadingTimer;
@@ -37,10 +37,10 @@ function updateCartridge() {
   document.getElementById("game-description").textContent = game.description;
   rotor.querySelectorAll(".tape-cartridge").forEach((cartridge, i) => {
     let offset = (i - selected + games.length) % games.length;
-    if (offset > games.length / 2) offset -= games.length;
+    // Cyclic order: selected module above all eight stored cartridges.
     const active = offset === 0;
     cartridge.style.setProperty("--offset", offset);
-    cartridge.style.setProperty("--stack-y", `${offset < 0 ? offset * 27 : offset === 0 ? 0 : 256 + (offset - 1) * 27}px`);
+    cartridge.style.setProperty("--stack-y", `${offset === 0 ? 0 : 273 + (offset - 1) * Math.max(28, (deck.clientHeight - 321) / 7)}px`);
     cartridge.style.zIndex = String(active ? 20 : 10 - Math.abs(offset));
     cartridge.setAttribute("aria-current", String(active));
     cartridge.querySelector(".tape-spine").setAttribute("aria-pressed", String(active));
@@ -174,6 +174,7 @@ function fitViewport() {
   const viewport = window.visualViewport;
   const width = viewport ? viewport.width : window.innerWidth;
   const height = viewport ? viewport.height : window.innerHeight;
+  updateCartridge();
   // Extra margin protects projecting base edges, focus outlines and hardware depth.
   const scale = Math.max(0.05, Math.min(1,
     (width - 32) / (station.offsetWidth + 20),
