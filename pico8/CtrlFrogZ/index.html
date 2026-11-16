@@ -1037,16 +1037,21 @@ var arcade_touch_key = '';
 var arcade_touch_down = false;
 var arcade_touch_blocked = false;
 var arcade_touch_restore = null;
+var arcade_report_state = function() {};
+var arcade_reported_playing = null;
+var arcade_navigation_open = false;
+var arcade_navigation_resume = false;
 function arcadeTouchGeometry(w, h, mode) {
   var menu = 40;
+  var gap = 8;
   var wide = mode === 'wide' || (mode === 'auto' && w > h);
-  var r = Math.max(1, Math.min(40, w / (wide ? 24 : 12), (h - menu) / (wide ? 9 : 16)));
-  var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 16 : w, h - menu - (wide ? 0 : 8 * r))));
+  var r = Math.max(1, Math.min(40, w / (wide ? 24 : 12), (h - menu - gap) / (wide ? 10 : 16)));
+  var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 16 : w, wide ? h - menu * 2 : h - menu - 8 * r - gap)));
   return {
     w: w, h: h, r: r, mode: wide ? 'wide' : 'stacked',
-    game: { x: (w - size) / 2, y: Math.max(0, (h - menu - (wide ? 0 : 8 * r) - size) / 2), size: size },
-    left: { x: 0, y: wide ? (h - menu - 6 * r) / 2 : h - 6 * r },
-    right: { x: w - 6 * r, y: wide ? (h - menu - 8 * r) / 2 : h - 8 * r }
+    game: { x: (w - size) / 2, y: wide ? (h - size) / 2 : 0, size: size },
+    left: { x: 0, y: wide ? (h - 6 * r) / 2 : h - 6 * r },
+    right: { x: w - 6 * r, y: wide ? Math.min(h - 8 * r, (h - 8 * r) / 2 + r) : h - 8 * r }
   };
 }
 function arcadeTouchEnabled() {
@@ -1057,6 +1062,19 @@ function arcadeReleaseTouch() {
   if (typeof pico8_buttons !== 'undefined') pico8_buttons[0] = 0;
   if (typeof pico8_mouse !== 'undefined') pico8_mouse[2] = 0;
   arcade_touch_blocked = arcade_touch_down;
+}
+function arcadeSetNavigation(open) {
+  if (open === arcade_navigation_open) return;
+  arcade_navigation_open = open;
+  arcadeReleaseTouch();
+  if (!p8_is_running || !Module || !Module.pico8TogglePaused) return;
+  if (open) {
+    arcade_navigation_resume = !pico8_state.is_paused;
+    if (arcade_navigation_resume) Module.pico8TogglePaused();
+  } else {
+    if (arcade_navigation_resume && pico8_state.is_paused) Module.pico8TogglePaused();
+    arcade_navigation_resume = false;
+  }
 }
 function arcadeUtilityMenu() {
   var desktop = document.getElementById('p8_menu_buttons');
@@ -1091,6 +1109,10 @@ function arcadePositionUtilityMenu() {
 }
 function arcadeApplyTouchLayout() {
   arcadeUtilityMenu();
+  if (arcade_reported_playing !== p8_is_running) {
+    arcade_reported_playing = p8_is_running;
+    arcade_report_state();
+  }
   var active = Boolean(arcadeTouchEnabled());
   document.documentElement.classList.toggle('arcade-adaptive', active);
   if (!active) {
@@ -1151,6 +1173,7 @@ function arcadeApplyTouchLayout() {
 }
 function arcadeHandleTouch(e, step) {
   if (!arcadeTouchEnabled() || !p8_is_running) return false;
+  if (arcade_navigation_open) { arcadeReleaseTouch(); return true; }
   var touches = e.touches || [];
   arcade_touch_down = touches.length > 0;
   pico8_buttons[0] = 0;
@@ -1183,13 +1206,15 @@ function arcadeHandleTouch(e, step) {
   let parentOrigin = null, touched = false;
   const report = () => {
     if (!parentOrigin) return;
-    parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched }, parentOrigin);
-    parent.postMessage({ type: 'portfolio:pico-capabilities', version: 2, adaptiveTouch: true }, parentOrigin);
+    parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched, playing: p8_is_running }, parentOrigin);
+    parent.postMessage({ type: 'portfolio:pico-capabilities', version: 2, adaptiveTouch: true, compactPlay: true }, parentOrigin);
   };
+  arcade_report_state = report;
   window.addEventListener('message', event => {
     if (event.source !== parent || !/^https?:\/\//.test(event.origin)) return;
     if (parentOrigin && parentOrigin !== event.origin) return;
     if (event.data?.type === 'portfolio:pico-connect' && event.data.version === 1) { parentOrigin = event.origin; report(); }
+    if (event.origin === parentOrigin && event.data?.type === 'portfolio:pico-navigation' && event.data.version === 2 && typeof event.data.open === 'boolean') arcadeSetNavigation(event.data.open);
     if (event.origin !== parentOrigin || event.data?.type !== 'portfolio:pico-layout' || event.data.version !== 2) return;
     if (!['stacked', 'wide'].includes(event.data.layout) || !Number.isSafeInteger(event.data.requestId)) return;
     arcade_touch_mode = event.data.layout;
