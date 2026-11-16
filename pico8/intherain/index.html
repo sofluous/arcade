@@ -1022,6 +1022,13 @@ canvas{
 html.arcade-adaptive, .arcade-adaptive body { width:100%; height:100%; overflow:hidden; overscroll-behavior:none; }
 .arcade-adaptive #p8_frame_0, .arcade-adaptive #p8_frame, .arcade-adaptive #p8_container, .arcade-adaptive #p8_playarea { max-width:none!important; max-height:none!important; }
 .arcade-adaptive #canvas { max-width:none!important; max-height:none!important; }
+.arcade-utility-ready #p8_menu_buttons_touch { display:none!important; }
+#arcade_utility_buttons { display:none; position:fixed; width:148px; height:40px; box-sizing:border-box; padding:4px; gap:4px; align-items:center; flex-wrap:nowrap; z-index:20; }
+.arcade-utility-touch #arcade_utility_buttons { width:184px; }
+.arcade-utility-running #arcade_utility_buttons { display:flex; }
+#arcade_utility_buttons .p8_menu_button { position:static!important; float:none!important; margin:0!important; padding:4px; width:32px; height:32px; box-sizing:border-box; flex:0 0 32px; cursor:pointer; }
+.arcade-utility-ready:not(.arcade-utility-touch) #arcade_utility_buttons #p8b_close { display:none!important; }
+#arcade_utility_buttons .p8_menu_button:focus-visible { outline:2px solid white; outline-offset:-2px; }
 </style>
 <script>
 
@@ -1031,15 +1038,15 @@ var arcade_touch_down = false;
 var arcade_touch_blocked = false;
 var arcade_touch_restore = null;
 function arcadeTouchGeometry(w, h, mode) {
-  var menu = 32;
+  var menu = 40;
   var wide = mode === 'wide' || (mode === 'auto' && w > h);
   var r = Math.max(1, Math.min(40, w / (wide ? 24 : 12), (h - menu) / (wide ? 9 : 16)));
   var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 16 : w, h - menu - (wide ? 0 : 8 * r))));
   return {
     w: w, h: h, r: r, mode: wide ? 'wide' : 'stacked',
-    game: { x: (w - size) / 2, y: menu + Math.max(0, (h - menu - (wide ? 0 : 8 * r) - size) / 2), size: size },
-    left: { x: 0, y: wide ? menu + (h - menu - 6 * r) / 2 : h - 6 * r },
-    right: { x: w - 6 * r, y: wide ? menu + (h - menu - 8 * r) / 2 : h - 8 * r }
+    game: { x: (w - size) / 2, y: Math.max(0, (h - menu - (wide ? 0 : 8 * r) - size) / 2), size: size },
+    left: { x: 0, y: wide ? (h - menu - 6 * r) / 2 : h - 6 * r },
+    right: { x: w - 6 * r, y: wide ? (h - menu - 8 * r) / 2 : h - 8 * r }
   };
 }
 function arcadeTouchEnabled() {
@@ -1051,7 +1058,39 @@ function arcadeReleaseTouch() {
   if (typeof pico8_mouse !== 'undefined') pico8_mouse[2] = 0;
   arcade_touch_blocked = arcade_touch_down;
 }
+function arcadeUtilityMenu() {
+  var desktop = document.getElementById('p8_menu_buttons');
+  var touch = document.getElementById('p8_menu_buttons_touch');
+  var play = document.getElementById('p8_playarea');
+  if (!desktop || !touch || !play) return;
+  var row = document.getElementById('arcade_utility_buttons');
+  if (!row) {
+    row = document.createElement('div'); row.id = 'arcade_utility_buttons';
+    row.setAttribute('role', 'group'); row.setAttribute('aria-label', 'PICO-8 player controls');
+    for (var id of ['p8b_controls', 'p8b_pause', 'p8b_sound', 'p8b_full']) row.appendChild(desktop.querySelector('#' + id));
+    row.appendChild(touch.querySelector('#p8b_close'));
+    play.appendChild(row);
+    var labels = ['Controls', 'Pause', 'Sound', 'Fullscreen', 'Close game'];
+    Array.from(row.children).forEach((button, index) => {
+      button.setAttribute('role', 'button'); button.setAttribute('aria-label', labels[index]); button.tabIndex = 0;
+      button.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); button.click(); } });
+    });
+  }
+  var fullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+  document.documentElement.classList.add('arcade-utility-ready');
+  document.documentElement.classList.toggle('arcade-utility-touch', Boolean(p8_touch_detected));
+  document.documentElement.classList.toggle('arcade-utility-running', Boolean(p8_is_running && !fullscreen));
+}
+function arcadePositionUtilityMenu() {
+  var row = document.getElementById('arcade_utility_buttons');
+  var canvas = document.getElementById('canvas');
+  if (!row || !canvas || !p8_is_running) return;
+  var screen = canvas.getBoundingClientRect();
+  row.style.left = Math.max(0, screen.right - row.getBoundingClientRect().width) + 'px';
+  row.style.top = screen.bottom + 'px';
+}
 function arcadeApplyTouchLayout() {
+  arcadeUtilityMenu();
   var active = Boolean(arcadeTouchEnabled());
   document.documentElement.classList.toggle('arcade-adaptive', active);
   if (!active) {
@@ -1062,6 +1101,7 @@ function arcadeApplyTouchLayout() {
       }
       arcade_touch_restore = null;
     }
+    arcadePositionUtilityMenu();
     return false;
   }
   var canvas = document.getElementById('canvas');
@@ -1085,9 +1125,6 @@ function arcadeApplyTouchLayout() {
   outer.style.height = innerHeight + 'px';
   frame.style.display = 'block';
   container.style.display = 'block';
-  var menu = document.getElementById('p8_menu_buttons_touch');
-  menu.style.position = 'fixed'; menu.style.left = Math.max(0, (innerWidth - 120) / 2) + 'px';
-  menu.style.top = '0px'; menu.style.width = '120px'; menu.style.height = '32px';
   var start = document.getElementById('p8_start_button');
   if (!p8_is_running) {
     play.style.display = 'none'; start.style.display = 'flex'; start.style.height = '100%';
@@ -1109,6 +1146,7 @@ function arcadeApplyTouchLayout() {
     }
   }
   window.arcade_touch_geometry = g;
+  arcadePositionUtilityMenu();
   return true;
 }
 function arcadeHandleTouch(e, step) {
