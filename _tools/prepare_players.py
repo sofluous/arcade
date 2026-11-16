@@ -13,6 +13,156 @@ ANCHOR = '\t\t// skip if relevant state has not changed'
 LEGACY_LINK = '<link rel="stylesheet" href="../player.css">'
 BRIDGE = "// Install beside arcade's player.css and include in every prepared export shell.\n// Handshake binds replies to the embedding window without trusting arbitrary messages.\n(() => {\n  if (window.parent === window) return;\n  let parentOrigin = null;\n  let touched = false;\n  const report = () => {\n    if (parentOrigin) window.parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched }, parentOrigin);\n  };\n  window.addEventListener('message', event => {\n    if (event.source !== window.parent || !/^https?:\\/\\//.test(event.origin)) return;\n    if (event.data?.type !== 'portfolio:pico-connect' || event.data.version !== 1) return;\n    if (parentOrigin && parentOrigin !== event.origin) return;\n    parentOrigin = event.origin;\n    report();\n  });\n  window.addEventListener('touchstart', () => {\n    touched = true;\n    report();\n  }, { once: true, passive: true, capture: true });\n})();\n"
 LINK = LEGACY_LINK + '\n<script>\n' + BRIDGE + '</script>'
+PREVIOUS_LINK = LINK
+# Kept inline so the preparer remains a single-file delivery to Arcade.
+ADAPTIVE = r'''
+var arcade_touch_mode = window.parent === window ? 'auto' : null;
+var arcade_touch_key = '';
+var arcade_touch_down = false;
+var arcade_touch_blocked = false;
+var arcade_touch_restore = null;
+function arcadeTouchGeometry(w, h, mode) {
+  var menu = 32;
+  var wide = mode === 'wide' || (mode === 'auto' && w > h);
+  var r = Math.max(1, Math.min(40, w / (wide ? 24 : 12), (h - menu) / (wide ? 9 : 16)));
+  var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 16 : w, h - menu - (wide ? 0 : 8 * r))));
+  return {
+    w: w, h: h, r: r, mode: wide ? 'wide' : 'stacked',
+    game: { x: (w - size) / 2, y: menu + Math.max(0, (h - menu - (wide ? 0 : 8 * r) - size) / 2), size: size },
+    left: { x: 0, y: wide ? menu + (h - menu - 6 * r) / 2 : h - 6 * r },
+    right: { x: w - 6 * r, y: wide ? menu + (h - menu - 8 * r) / 2 : h - 8 * r }
+  };
+}
+function arcadeTouchEnabled() {
+  return arcade_touch_mode && typeof p8_touch_detected !== 'undefined' && p8_touch_detected &&
+    !(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+}
+function arcadeReleaseTouch() {
+  if (typeof pico8_buttons !== 'undefined') pico8_buttons[0] = 0;
+  if (typeof pico8_mouse !== 'undefined') pico8_mouse[2] = 0;
+  arcade_touch_blocked = arcade_touch_down;
+}
+function arcadeApplyTouchLayout() {
+  var active = Boolean(arcadeTouchEnabled());
+  document.documentElement.classList.toggle('arcade-adaptive', active);
+  if (!active) {
+    if (arcade_touch_key) { arcadeReleaseTouch(); arcade_touch_key = ''; }
+    if (arcade_touch_restore) {
+      for (var entry of arcade_touch_restore) {
+        if (entry[1] === null) entry[0].removeAttribute('style'); else entry[0].setAttribute('style', entry[1]);
+      }
+      arcade_touch_restore = null;
+    }
+    return false;
+  }
+  var canvas = document.getElementById('canvas');
+  var container = document.getElementById('p8_container');
+  var play = document.getElementById('p8_playarea');
+  if (!canvas || !container || !play) return false;
+  if (!arcade_touch_restore) {
+    var changed = [canvas, canvas.parentElement, ...['p8_frame_0', 'p8_frame', 'p8_container', 'p8_playarea', 'p8_start_button', 'p8_menu_buttons', 'p8_menu_buttons_touch', 'touch_controls_gfx', 'touch_controls_background', 'controls_left_panel', 'controls_right_panel'].map(id => document.getElementById(id))];
+    arcade_touch_restore = changed.map(node => [node, node.getAttribute('style')]);
+  }
+  var g = arcadeTouchGeometry(innerWidth, innerHeight, arcade_touch_mode);
+  var key = g.w + ':' + g.h + ':' + g.mode;
+  if (key !== arcade_touch_key) { arcadeReleaseTouch(); arcade_touch_key = key; }
+  document.documentElement.classList.remove('arcade-windowed');
+  var frame = document.getElementById('p8_frame');
+  var outer = document.getElementById('p8_frame_0');
+  for (var node of [outer, frame, container, play]) {
+    node.style.width = '100%'; node.style.height = '100%'; node.style.maxWidth = 'none'; node.style.maxHeight = 'none';
+    node.style.margin = '0';
+  }
+  outer.style.height = innerHeight + 'px';
+  frame.style.display = 'block';
+  container.style.display = 'block';
+  var menu = document.getElementById('p8_menu_buttons_touch');
+  menu.style.position = 'fixed'; menu.style.left = Math.max(0, (innerWidth - 120) / 2) + 'px';
+  menu.style.top = '0px'; menu.style.width = '120px'; menu.style.height = '32px';
+  var start = document.getElementById('p8_start_button');
+  if (!p8_is_running) {
+    play.style.display = 'none'; start.style.display = 'flex'; start.style.height = '100%';
+  } else {
+    start.style.display = 'none'; play.style.display = 'block';
+    canvas.parentElement.style.position = 'static';
+    canvas.style.position = 'fixed'; canvas.style.left = g.game.x + 'px'; canvas.style.top = g.game.y + 'px';
+    canvas.style.width = g.game.size + 'px'; canvas.style.height = g.game.size + 'px'; canvas.style.margin = '0';
+    canvas.style.pointerEvents = 'none';
+    document.getElementById('p8_menu_buttons').style.display = 'none';
+    for (var id of ['touch_controls_gfx', 'touch_controls_background']) document.getElementById(id).style.display = 'block';
+    var left = document.getElementById('controls_left_panel');
+    var right = document.getElementById('controls_right_panel');
+    for (var pair of [[left, g.left.x, g.left.y, 6], [right, g.right.x, g.right.y + g.r, 7]]) {
+      pair[0].style.position = 'fixed'; pair[0].style.left = pair[1] + 'px'; pair[0].style.top = pair[2] + 'px';
+      pair[0].style.width = (g.r * 6) + 'px'; pair[0].style.height = (g.r * pair[3]) + 'px';
+      var source = p8_gfx_dat[pair[0].id];
+      if (pair[0].getAttribute('src') !== source) pair[0].setAttribute('src', source);
+    }
+  }
+  window.arcade_touch_geometry = g;
+  return true;
+}
+function arcadeHandleTouch(e, step) {
+  if (!arcadeTouchEnabled() || !p8_is_running) return false;
+  var touches = e.touches || [];
+  arcade_touch_down = touches.length > 0;
+  pico8_buttons[0] = 0;
+  if (typeof pico8_mouse !== 'undefined') pico8_mouse[2] = 0;
+  if (arcade_touch_blocked) { if (!touches.length) arcade_touch_blocked = false; return true; }
+  var g = arcadeTouchGeometry(innerWidth, innerHeight, arcade_touch_mode), r = g.r;
+  for (var touch of touches) {
+    var x = touch.clientX, y = touch.clientY, bits = 0;
+    if (x >= g.left.x && x < g.left.x + 6*r && y >= g.left.y && y < g.left.y + 6*r) {
+      var dx = x - g.left.x - 3*r, dy = y - g.left.y - 3*r;
+      if (Math.abs(dx) > Math.abs(dy)*.6) { if (dx < -r/3) bits |= 1; if (dx > r/3) bits |= 2; }
+      if (Math.abs(dy) > Math.abs(dx)*.6) { if (dy < -r/3) bits |= 4; if (dy > r/3) bits |= 8; }
+    } else if (x >= g.right.x && x < g.right.x + 6*r && y >= g.right.y && y < g.right.y + 8*r) {
+      var lx = x - g.right.x, ly = y - g.right.y;
+      if (ly < 2*r) { if (lx > 3*r) bits |= 0x40; }
+      else { if (8*r - ly > (6*r - lx)*.8) bits |= 0x10; if (6*r - lx > (8*r - ly)*.8) bits |= 0x20; }
+    } else if (x >= g.game.x && x < g.game.x + g.game.size && y >= g.game.y && y < g.game.y + g.game.size && typeof pico8_mouse !== 'undefined') {
+      pico8_mouse = [Math.floor((x-g.game.x)*128/g.game.size), Math.floor((y-g.game.y)*128/g.game.size), step < 2 ? 1 : 0];
+    }
+    pico8_buttons[0] |= bits;
+    if (bits && e.cancelable) e.preventDefault();
+  }
+  return true;
+}
+(() => {
+  for (var event of ['resize', 'blur', 'pagehide', 'fullscreenchange', 'webkitfullscreenchange']) window.addEventListener(event, arcadeReleaseTouch);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) arcadeReleaseTouch(); });
+  window.addEventListener('touchcancel', () => { arcade_touch_down = false; arcadeReleaseTouch(); arcade_touch_blocked = false; });
+  if (window.parent === window) return;
+  let parentOrigin = null, touched = false;
+  const report = () => {
+    if (!parentOrigin) return;
+    parent.postMessage({ type: 'portfolio:pico-input', version: 1, touch: touched }, parentOrigin);
+    parent.postMessage({ type: 'portfolio:pico-capabilities', version: 2, adaptiveTouch: true }, parentOrigin);
+  };
+  window.addEventListener('message', event => {
+    if (event.source !== parent || !/^https?:\/\//.test(event.origin)) return;
+    if (parentOrigin && parentOrigin !== event.origin) return;
+    if (event.data?.type === 'portfolio:pico-connect' && event.data.version === 1) { parentOrigin = event.origin; report(); }
+    if (event.origin !== parentOrigin || event.data?.type !== 'portfolio:pico-layout' || event.data.version !== 2) return;
+    if (!['stacked', 'wide'].includes(event.data.layout) || !Number.isSafeInteger(event.data.requestId)) return;
+    arcade_touch_mode = event.data.layout;
+    arcadeReleaseTouch();
+    parent.postMessage({ type: 'portfolio:pico-layout-applied', version: 2, layout: arcade_touch_mode, requestId: event.data.requestId }, parentOrigin);
+  });
+  window.addEventListener('touchstart', () => { if (!touched) { touched = true; report(); } }, { passive: true, capture: true });
+})();
+'''
+ADAPTIVE_STYLE = '''<style>
+html.arcade-adaptive, .arcade-adaptive body { width:100%; height:100%; overflow:hidden; overscroll-behavior:none; }
+.arcade-adaptive #p8_frame_0, .arcade-adaptive #p8_frame, .arcade-adaptive #p8_container, .arcade-adaptive #p8_playarea { max-width:none!important; max-height:none!important; }
+.arcade-adaptive #canvas { max-width:none!important; max-height:none!important; }
+</style>'''
+BRIDGE = ADAPTIVE
+LINK = LEGACY_LINK + '\n' + ADAPTIVE_STYLE + '\n<script>\n' + BRIDGE + '</script>'
+LAYOUT_ENTRY = '\tfunction p8_update_layout()\n\t{'
+TOUCH_ENTRY = '\tfunction pico8_buttons_event(e, step)\n\t{'
+LAYOUT_HOOK = '\n\t\tif (arcadeApplyTouchLayout()) { requestAnimationFrame(p8_update_layout); return; }'
+TOUCH_HOOK = '\n\t\tif (arcadeHandleTouch(e, step)) return;'
 BLOCK = '''\t\t// Arcade desktop embed: fit one square plus a 40px control row.
 \t\t// Leave the export's touch and fullscreen layout in charge in those modes.
 \t\tvar arcade_windowed = !is_fullscreen && !p8_touch_detected;
@@ -41,6 +191,8 @@ REPLACEMENTS = {
 # Unknown exporters must be inspected and tested before extending this set.
 SUPPORTED_LAYOUTS = {'97cd517e4beef6df93593876758de25760f5f2c9e74861d49f5c549a36104d37'}
 LAYOUT_PATTERN = re.compile(r'\tfunction p8_update_layout\(\)\n\t\{.*?\n\t\}', re.S)
+TOUCH_PATTERN = re.compile(r'\tfunction pico8_buttons_event\(e, step\)\n\t\{.*?\n\t\}', re.S)
+SUPPORTED_TOUCH = {'e4e518ff736ba0831af7a3308b4db6fe7e81cba34b7527feaa1f92183dca5107'}
 
 
 def sha(data):
@@ -49,6 +201,15 @@ def sha(data):
 
 def original_shell(text):
     """Recognize stock or our exact managed integration; reject partial edits."""
+    adaptive = LINK in text
+    if adaptive:
+        if text.count(LAYOUT_HOOK) != 1 or text.count(TOUCH_HOOK) != 1:
+            raise ValueError('partial adaptive integration')
+        text = text.replace(LAYOUT_HOOK, '').replace(TOUCH_HOOK, '')
+    elif LAYOUT_HOOK in text or TOUCH_HOOK in text:
+        raise ValueError('partial adaptive integration')
+    if PREVIOUS_LINK in text:
+        text = text.replace(PREVIOUS_LINK, LINK)
     # Upgrade only the exact previous sizing integration.
     if LEGACY_BLOCK in text:
         text = text.replace(LEGACY_BLOCK, BLOCK)
@@ -75,12 +236,18 @@ def prepare(raw):
     layout = LAYOUT_PATTERN.findall(original)
     if len(layout) != 1 or sha(layout[0].encode()) not in SUPPORTED_LAYOUTS:
         raise ValueError('unsupported layout function; no automatic patch attempted')
-    for element in ('p8_frame_0', 'p8_frame', 'p8_container', 'p8_playarea', 'canvas', 'p8_menu_buttons', 'p8_start_button'):
+    touch = TOUCH_PATTERN.findall(original)
+    if len(touch) != 1 or sha(touch[0].encode()) not in SUPPORTED_TOUCH:
+        raise ValueError('unsupported touch handler; no automatic patch attempted')
+    for element in ('p8_frame_0', 'p8_frame', 'p8_container', 'p8_playarea', 'canvas', 'p8_menu_buttons', 'p8_menu_buttons_touch', 'p8_start_button', 'controls_left_panel', 'controls_right_panel', 'touch_controls_gfx', 'touch_controls_background'):
         if len(re.findall(r'\bid=["\x27]' + element + r'["\x27]', original)) != 1:
             raise ValueError('missing or duplicate player element: ' + element)
     if original.count('</head>') != 1 or original.count(ANCHOR) != 1:
         raise ValueError('unrecognized HTML integration points')
     result = original.replace(ANCHOR, BLOCK + ANCHOR)
+    if original.count(TOUCH_ENTRY) != 1:
+        raise ValueError('unsupported touch handler; no automatic patch attempted')
+    result = result.replace(LAYOUT_ENTRY, LAYOUT_ENTRY + LAYOUT_HOOK).replace(TOUCH_ENTRY, TOUCH_ENTRY + TOUCH_HOOK)
     for old, new in REPLACEMENTS.items():
         if result.count(old) != 1:
             raise ValueError('unrecognized dimension assignment: ' + old)
