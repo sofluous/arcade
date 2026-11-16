@@ -30,12 +30,14 @@ function arcadeTouchGeometry(w, h, mode) {
   var gap = 8;
   var wide = mode === 'wide' || (mode === 'auto' && w > h);
   var r = Math.max(1, Math.min(40, w / (wide ? 24 : 12), (h - menu - gap) / (wide ? 10 : 16)));
-  var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 16 : w, wide ? h - menu * 2 : h - menu - 8 * r - gap)));
+  // Landscape reserves a utility rail beside the game, clear of gameplay buttons.
+  if (wide) r = Math.max(1, Math.min((h - 52) / 8, Math.max(14, Math.min(40, w / 28, (w - h - 112) / 12))));
+  var size = Math.max(1, Math.floor(Math.min(wide ? w - 12 * r - 112 : w, wide ? h : h - menu - 8 * r - gap)));
   return {
     w: w, h: h, r: r, mode: wide ? 'wide' : 'stacked',
     game: { x: (w - size) / 2, y: wide ? (h - size) / 2 : 0, size: size },
     left: { x: 0, y: wide ? (h - 6 * r) / 2 : h - 6 * r },
-    right: { x: w - 6 * r, y: wide ? Math.min(h - 8 * r, (h - 8 * r) / 2 + r) : h - 8 * r }
+    right: { x: w - 6 * r, y: h - 8 * r }
   };
 }
 function arcadeTouchEnabled() {
@@ -88,6 +90,13 @@ function arcadePositionUtilityMenu() {
   var canvas = document.getElementById('canvas');
   if (!row || !canvas || !p8_is_running) return;
   var screen = canvas.getBoundingClientRect();
+  var side = Boolean(arcadeTouchEnabled() && arcade_touch_geometry && arcade_touch_geometry.mode === 'wide');
+  document.documentElement.classList.toggle('arcade-utility-side', side);
+  if (side) {
+    row.style.left = screen.right + 8 + 'px';
+    row.style.top = Math.max(0, Math.min(8, innerHeight - row.getBoundingClientRect().height)) + 'px';
+    return;
+  }
   row.style.left = Math.max(0, screen.right - row.getBoundingClientRect().width) + 'px';
   row.style.top = screen.bottom + 'px';
 }
@@ -216,6 +225,7 @@ html.arcade-adaptive, .arcade-adaptive body { width:100%; height:100%; overflow:
 #arcade_utility_buttons { display:none; position:fixed; width:148px; height:40px; box-sizing:border-box; padding:4px; gap:4px; align-items:center; flex-wrap:nowrap; z-index:20; }
 .arcade-utility-touch #arcade_utility_buttons { width:184px; }
 .arcade-utility-running #arcade_utility_buttons { display:flex; }
+.arcade-utility-side #arcade_utility_buttons { width:40px; height:184px; flex-direction:column; }
 #arcade_utility_buttons .p8_menu_button { position:static!important; float:none!important; margin:0!important; padding:4px; width:32px; height:32px; box-sizing:border-box; flex:0 0 32px; cursor:pointer; }
 .arcade-utility-ready:not(.arcade-utility-touch) #arcade_utility_buttons #p8b_close { display:none!important; }
 #arcade_utility_buttons .p8_menu_button:focus-visible { outline:2px solid white; outline-offset:-2px; }
@@ -266,7 +276,7 @@ def original_shell(text):
     """Recognize stock or our exact managed integration; reject partial edits."""
     # Upgrade only the exact previously shipped adaptive bridge/style pair.
     previous = re.search(re.escape(LEGACY_LINK) + r'\n<style>.*?</style>\n<script>\n.*?</script>', text, re.S)
-    if previous and sha(previous[0].encode()) in {'a2bf11695612f02d4c16dafdedd2c4110b83774f1b465c746a143b4b2aa748e3', '881eaf6c258263e2ff223043e32f5b795ae090d799ac5bc91b0ecdadf575332d'}:
+    if previous and sha(previous[0].encode()) in {'a2bf11695612f02d4c16dafdedd2c4110b83774f1b465c746a143b4b2aa748e3', '881eaf6c258263e2ff223043e32f5b795ae090d799ac5bc91b0ecdadf575332d', '4bf6e998e2829ad44e8fe96218b2a2878b7dd9bed42f06320bbcadf6278a63a3'}:
         text = text[:previous.start()] + LINK + text[previous.end():]
     adaptive = LINK in text
     if adaptive:
